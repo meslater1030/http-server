@@ -11,8 +11,19 @@ socket.listen(1)
 
 
 def response_ok():
-    response_message = "HTTP 200 OK"
-    return response_message
+    return sys.stdout.write(
+        "HTTP/1.1 200 OK\n"
+        "Content-Type: text/html; charset=utf-8\n"
+        "<!DOCTYPE html>\n"
+        "<html>\n"
+        "\t<head>\n"
+        "\t\t<title>Status 200 OK</title>\n"
+        "\t</head>\n"
+        "\t<body>\n"
+        "\t\t<p>HTTP:200 Return OK</p>\n"
+        "\t</body>\n"
+        "</html>\n"
+        )
 
 while True:
     try:

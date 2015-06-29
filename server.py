@@ -9,6 +9,11 @@ socket.bind(ADDR)
 
 socket.listen(1)
 
+
+def response_ok():
+    response_message = "HTTP 200 OK"
+    return response_message
+
 while True:
     try:
         conn, addr = socket.accept()
@@ -17,7 +22,6 @@ while True:
             msg = conn.recv(16)
             output = output + msg
             if len(msg) < 16:
-                conn.sendall(output)
                 conn.close()
                 break
     except KeyboardInterrupt:

@@ -11,7 +11,7 @@ socket.listen(1)
 
 
 def response_ok():
-    return sys.stdout.write(
+    return conn.sendall(
         "HTTP/1.1 200 OK\n"
         "Content-Type: text/html; charset=utf-8\n"
         "<!DOCTYPE html>\n"
@@ -20,7 +20,7 @@ def response_ok():
         "\t\t<title>Status 200 OK</title>\n"
         "\t</head>\n"
         "\t<body>\n"
-        "\t\t<p>HTTP:200 Return OK</p>\n"
+        "\t\t<p>HTTP:200 OK response</p>\n"
         "\t</body>\n"
         "</html>\n"
         )
@@ -33,6 +33,8 @@ while True:
             msg = conn.recv(16)
             output = output + msg
             if len(msg) < 16:
+                response_ok()
+                conn.sendall(output)
                 conn.close()
                 break
     except KeyboardInterrupt:

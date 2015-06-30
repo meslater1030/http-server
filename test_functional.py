@@ -3,6 +3,7 @@
 
 import pytest
 import socket
+<<<<<<< Updated upstream
 #import server
 from multiprocessing import Process
 #from server import response_ok
@@ -54,15 +55,45 @@ def test_response_error():
 
 @pytest.fixture()
 def client_code():
-    ADDR = ('127.0.0.1', 8000)
-    client_conn = socket.socket(
-        socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP
-    )
+=======
+import sys
+# import server
+# # from server import response_ok
+# from multiprocessing import Process
 
-    client_conn.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    client_conn.connect(ADDR)
-    return client_conn
+@pytest.yield_fixture
+def server_process():
+    process = Process(target=server.start_server)
+    process.daemon = True
+    process.start()
+    yield process
+
+# @pytest.fixture(scope="module")
+# def test_run_server(request):
+#     ADDR = ('127.0.0.1', 8000)
+#     socket_conn = socket.socket(
+#         socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP
+#     )
+
+#     socket_conn.bind(ADDR)
+
+#     socket_conn.listen(1)
+
+#     while True:
+#         try:
+#             conn, addr = socket_conn.accept()
+#             output = ""
+#             while True:
+#                 msg = conn.recv(16)
+#                 output = output + msg
+#                 if len(msg) < 16:
+#                     response_ok()
+#                     conn.sendall(output)
+#                     conn.close()
+#                     break
+#         except KeyboardInterrupt:
+#             break
 
 
 def test_function(client_code):
@@ -82,3 +113,12 @@ def test_function(client_code):
         assert '<html>' in output
     except Exception as e:
         print e
+<<<<<<< Updated upstream
+=======
+    assert output[-15:] == msg
+    assert output[:15] == b"HTTP/1.1 200 OK"
+
+# this should be run while no server is running
+def test_response_error():
+    
+>>>>>>> Stashed changes

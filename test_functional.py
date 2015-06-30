@@ -3,9 +3,8 @@
 
 import pytest
 import socket
-#import server
 from multiprocessing import Process
-#from server import response_ok
+from server import response_ok, response_error
 
 
 def run_server():
@@ -28,7 +27,6 @@ def run_server():
                 msg = conn.recv(16)
                 output = output + msg
                 if len(msg) < 16:
-                    #response_ok()
                     conn.sendall(output)
                     conn.close()
                     break
@@ -45,11 +43,13 @@ def multiproc():
 
 
 def test_response_ok(multiproc):
-    pass
+    response = response_ok()
+    assert "200" in response
 
 
 def test_response_error():
-    pass
+    response = response_error()
+    assert "500" in response
 
 
 @pytest.fixture()
@@ -86,21 +86,14 @@ def test_function(client_code):
         print e
 
 
-def test_500_function():
-    msg = "do you hear me at all?"
-
-    try:
-        client_code.sendall(msg)
-        output = ""
-        while True:
-            part = client_code.recv(16)
-            assert part
-            output = output + part
-            if len(part) < 16:
-                client_code.shutdown(socket.SHUT_WR)
-                client_code.close()
-                break
-        assert '<html>' in output
-        assert '500' in output
-    except Exception as e:
-        print e
+def test_send_msg(client_code):
+    client_code.sendall(b"GET Hello World")
+    output = ""
+    while True:
+        part = client_code.recv(16)
+        output = output + part
+        if len(part) < 16:
+            client_code.shutdown(socket.SHUT_WR)
+            client_code.close()
+            break
+    assert b"World" in output

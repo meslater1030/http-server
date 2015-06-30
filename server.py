@@ -4,9 +4,7 @@ ADDR = ('127.0.0.1', 8000)
 socket = socket.socket(
     socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP
     )
-
 socket.bind(ADDR)
-
 socket.listen(1)
 
 
@@ -24,6 +22,7 @@ def response_ok():
         "\t</body>\n"
         "</html>\n"
         )
+
 
 while True:
     try:

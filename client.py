@@ -22,6 +22,22 @@ def response_error():
         "</html>\n"
         )
 
+
+def response_ok():
+    return sys.stdout.write(
+        "HTTP/1.1 200 OK\n"
+        "Content-Type: text/html; charset=utf-8\n"
+        "<!DOCTYPE html>\n"
+        "<html>\n"
+        "\t<head>\n"
+        "\t\t<title>Status 200 OK</title>\n"
+        "\t</head>\n"
+        "\t<body>\n"
+        "\t\t<p>HTTP:200 OK response</p>\n"
+        "\t</body>\n"
+        "</html>\n"
+        )
+
 try:
     client.connect(ADDR)
 except Exception as e:
@@ -36,6 +52,7 @@ try:
         part = client.recv(16)
         output = output + part
         if len(part) < 16:
+            response_ok()
             sys.stdout.write(output)
             client.shutdown(socket.SHUT_WR)
             client.close()

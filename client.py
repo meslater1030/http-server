@@ -7,15 +7,17 @@ client = socket.socket(
 
 client.connect(ADDR)
 
-msg = "do you hear me?"
+msg = "do you hear me at all?"
 
 try:
     client.sendall(msg)
+    output = ""
     while True:
         part = client.recv(16)
+        output = output + part
         client.shutdown(socket.SHUT_WR)
-        print part
         if len(part) < 16:
+            print output
             client.close()
             break
 except Exception as e:

@@ -1,12 +1,18 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import pytest
+# import pytest
 import socket
 import sys
 # import server
-# from server import response_ok
+# # from server import response_ok
+# from multiprocessing import Process
 
+
+# @pytest.yield_fixture
+# def server_process():
+#     process = Process(target=server.start_server)
+#     process.daemon = True
+#     process.start()
+#     yield process
 
 # @pytest.fixture(scope="module")
 # def test_run_server(request):
@@ -35,7 +41,7 @@ import sys
 #             break
 
 
-def test_function(test_run_server):
+def test_function():
     ADDR = ('127.0.0.1', 8000)
     client_conn = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP

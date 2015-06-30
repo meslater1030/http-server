@@ -8,24 +8,22 @@ client = socket.socket(
 
 
 def response_error():
-    return sys.stdout.write(
-        "HTTP/1.1 500 not OK\n"
-        "Content-Type: text/html; charset=utf-8\n"
-        "<!DOCTYPE html>\n"
-        "<html>\n"
-        "\t<head>\n"
-        "\t\t<title>Status 500 not OK</title>\n"
-        "\t</head>\n"
-        "\t<body>\n"
-        "\t\t<p>HTTP:500 Internal Server Error</p>\n"
-        "\t</body>\n"
-        "</html>\n"
-        )
-
-try:
-    client.connect(ADDR)
-except Exception as e:
-    response_error()
+    try:
+        client.connect(ADDR)
+    except Exception:
+        return sys.stdout.write(
+            "HTTP/1.1 500 not OK\n"
+            "Content-Type: text/html; charset=utf-8\n"
+            "<!DOCTYPE html>\n"
+            "<html>\n"
+            "\t<head>\n"
+            "\t\t<title>Status 500 not OK</title>\n"
+            "\t</head>\n"
+            "\t<body>\n"
+            "\t\t<p>HTTP:500 Internal Server Error</p>\n"
+            "\t</body>\n"
+            "</html>\n"
+            )
 
 msg = "do you hear anything?"
 

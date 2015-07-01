@@ -37,5 +37,3 @@ def return_request():
 
 if __name__ == "__main__":
     return_request()
-
-# arbitrary change

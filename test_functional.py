@@ -3,43 +3,7 @@
 
 import pytest
 import socket
-from multiprocessing import Process
 from server import response_ok, response_error
-
-
-def run_server():
-    ADDR = ('127.0.0.1', 8000)
-    socket_conn = socket.socket(
-        socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP
-    )
-
-    socket_conn.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-    socket_conn.bind(ADDR)
-
-    socket_conn.listen(1)
-
-    while True:
-        try:
-            conn, addr = socket_conn.accept()
-            output = ""
-            while True:
-                msg = conn.recv(16)
-                output = output + msg
-                if len(msg) < 16:
-                    conn.sendall(output)
-                    conn.close()
-                    break
-        except KeyboardInterrupt:
-            break
-
-
-@pytest.yield_fixture()
-def multiproc():
-    special_process = Process(target=run_server)
-    special_process.daemon = True
-    special_process.start()
-    yield special_process
 
 
 def test_response_ok(multiproc):
@@ -79,11 +43,11 @@ def test_function(client_code):
                 client_code.shutdown(socket.SHUT_WR)
                 client_code.close()
                 break
-        assert '<html>' in output
-        assert '200' in output
-        assert 'do you hear me at all?' in output
     except Exception as e:
         print e
+    assert '<html>' in output
+    assert '200' in output
+    assert 'do you hear me at all?' in output
 
 
 def test_send_msg(client_code):

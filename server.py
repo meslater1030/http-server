@@ -1,11 +1,4 @@
-import socket
-
-ADDR = ('127.0.0.1', 8000)
-socket = socket.socket(
-    socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP
-    )
-socket.bind(ADDR)
-socket.listen(2)
+import socket as s
 
 
 def response_ok(reason_phrase):
@@ -20,6 +13,13 @@ def response_error(error_code, reason_phrase):
 
 
 def return_request():
+    ADDR = ('127.0.0.1', 8000)
+    socket = s.socket(
+        s.AF_INET, s.SOCK_STREAM, s.IPPROTO_IP
+    )
+
+    socket.bind(ADDR)
+    socket.listen(1)
     while True:
         try:
             conn, addr = socket.accept()
@@ -55,8 +55,3 @@ def parse_request(request):
 
 if __name__ == "__main__":
     return_request()
-<<<<<<< HEAD
-
-# arbitrary change
-=======
->>>>>>> 95c13df0a22891e7ff5f38a93dbd9fec405fe184

@@ -16,32 +16,6 @@ def response_error():
     return "HTTP/1.1 500 not OK\r\nContent-Type: text/html; charset=utf-8\r\n"
 
 
-<<<<<<< HEAD
-def response_ok():
-    return conn.sendall(
-        "HTTP/1.1 200 OK\n"
-        "Content-Type: text/html; charset=utf-8\n"
-        "<!DOCTYPE html>\n"
-        "<html>\n"
-        "\t<head>\n"
-        "\t\t<title>Status 200 OK</title>\n"
-        "\t</head>\n"
-        "\t<body>\n"
-        "\t\t<p>HTTP:200 OK response</p>\n"
-        "\t</body>\n"
-        "</html>\n"
-        )
-
-while True:
-    try:
-        conn, addr = socket.accept()
-        output = ""
-        while True:
-            msg = conn.recv(16)
-            output = output + msg
-            if len(msg) < 16:
-                response_ok()
-=======
 def return_request():
     while True:
         try:
@@ -54,7 +28,6 @@ def return_request():
                     break
             if "GET" in output:
                 conn.sendall(response_ok())
->>>>>>> 7f8194aa87327d7cdcbf416a9bf612cf37666d32
                 conn.sendall(output)
             else:
                 conn.sendall(response_error())

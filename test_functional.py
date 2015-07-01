@@ -72,17 +72,3 @@ def test_parse_request():
     bad_request = b"GET /index.html HTTP/1.1\r\nHost:"
     response = parse_request(bad_request)
     assert b"/index.html" in response
-
-
-'''def test_send_msg(client_code):
-    client_code.sendall(b"GET Hello World")
-    output = ""
-    while True:
-        part = client_code.recv(16)
-        output = output + part
-        if len(part) < 16:
-            client_code.shutdown(socket.SHUT_WR)
-            client_code.close()
-            break
-    assert b"World" in output
-    assert b"200" in output'''

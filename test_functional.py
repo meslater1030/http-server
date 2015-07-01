@@ -3,6 +3,7 @@
 
 import pytest
 import socket
+<<<<<<< HEAD
 from server import response_ok, response_error, parse_request
 
 
@@ -15,6 +16,8 @@ def test_response_error():
     response = response_error()
     assert "500" in response
 
+=======
+>>>>>>> 95c13df0a22891e7ff5f38a93dbd9fec405fe184
 
 @pytest.fixture()
 def client_code():
@@ -58,6 +61,7 @@ def test_functional(client_code):
                 break
     except Exception as e:
         print e
+<<<<<<< HEAD
     assert '<html>' in output
     assert '200' in output
     assert 'do you hear me at all?' in output
@@ -93,3 +97,20 @@ def test_parse_request():
     bad_request = b"good request"
     response = parse_request(bad_request)
     assert b"200" in response
+=======
+    assert '500' in output
+
+
+def test_send_msg(client_code):
+    client_code.sendall(b"GET Hello World")
+    output = ""
+    while True:
+        part = client_code.recv(16)
+        output = output + part
+        if len(part) < 16:
+            client_code.shutdown(socket.SHUT_WR)
+            client_code.close()
+            break
+    assert b"World" in output
+    assert "200" in output
+>>>>>>> 95c13df0a22891e7ff5f38a93dbd9fec405fe184

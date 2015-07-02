@@ -60,11 +60,11 @@ def parse_request(request):
 
 def resolve_uri(uri):
     if b"." in uri:
-        if b".html" in url:
+        if b".html" in uri:
             content_type = b"text/html"
-        elif b".jpg" in url:
+        elif b".jpg" in uri:
             content_type = b"image/jpg"
-        elif b".png" in url:
+        elif b".png" in uri:
             content_type = b"image/png"
         else:
             content_type = b"text/plain"

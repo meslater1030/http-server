@@ -6,11 +6,6 @@ import socket
 from server import response_ok, parse_request, resolve_uri
 
 
-def test_response_ok():
-    response = response_ok(b"this is from the client")
-    assert b"200" in response
-
-
 @pytest.fixture()
 def client_code():
     ADDR = ('127.0.0.1', 8000)
@@ -62,10 +57,28 @@ def test_bad_request_functional(client_code):
     assert b"400" in output
 
 
-def test_bad_parse():
-    bad_request = b"some_bad_request"
-    with pytest.raises(ValueError):
+def test_bad_HTTP():
+    bad_request = b"GET /index.html HTTP/1.0\r\nHost:"
+    with pytest.raises(NotImplementedError):
         parse_request(bad_request)
+
+
+def test_no_GET():
+    no_GET = b"/index.html HTTP/1.1\r\nHost:"
+    with pytest.raises(AttributeError):
+        parse_request(no_GET)
+
+
+def test_no_host():
+    no_host = b"GET /index.html HTTP/1.1\r\n"
+    with pytest.raises(ValueError):
+        parse_request(no_host)
+
+
+def test_not_found():
+    not_found = b"GET starbucks.html HTTP/1.1\r\nHost:"
+    with pytest.raises(LookupError):
+        resolve_uri(parse_request(not_found))
 
 
 def test_parse_request():
@@ -87,3 +100,10 @@ def test_uri_dir():
     uri = parse_request(request)
     response = resolve_uri(uri)
     assert b"JPEG" in response[0]
+
+
+def test_length():
+    request = b"GET sample.txt HTTP/1.1\r\nHost:"
+    uri = parse_request(request)
+    response = response_ok(uri)
+    assert "Content-Length: 96" in response

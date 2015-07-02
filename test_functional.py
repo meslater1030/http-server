@@ -72,3 +72,9 @@ def test_parse_request():
     bad_request = b"GET /index.html HTTP/1.1\r\nHost:"
     response = parse_request(bad_request)
     assert b"/index.html" in response
+
+
+def test_root():
+    request = b"GET sample.txt HTTP/1.1\r\nHost:"
+    response = parse_request(request)
+    assert b"This is a very simple text file" in response

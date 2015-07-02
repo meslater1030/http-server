@@ -3,7 +3,7 @@
 
 import pytest
 import socket
-from server import response_ok, parse_request
+from server import response_ok, parse_request, resolve_uri
 
 
 def test_response_ok():
@@ -76,5 +76,6 @@ def test_parse_request():
 
 def test_root():
     request = b"GET sample.txt HTTP/1.1\r\nHost:"
-    response = parse_request(request)
-    assert b"This is a very simple text file" in response
+    uri = parse_request(request)
+    response = resolve_uri(uri)
+    assert b"This is a very simple text file" in response[0]

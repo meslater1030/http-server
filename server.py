@@ -7,15 +7,15 @@ ROOT_DIRECTORY = b'webroot/'
 
 def response_ok(uri):
     length = str(len(resolve_uri(uri)[0]))
-    response = b"HTTP/1.1 200 %s\r\nContent-Type: %s; charset=utf-8\
-    \r\nContent-Length: %s\r\n\r\n %s" % (uri, resolve_uri(uri)[1],
-                                          length, resolve_uri(uri)[0])
+    response = b"HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\
+    \r\nContent-Length: {}\r\n\r\n {}".format(resolve_uri(uri)[1],
+                                              length, resolve_uri(uri)[0])
     return response
 
 
 def response_error(error_code, reason_phrase):
-    response = "HTTP/1.1 " + error_code + " " + reason_phrase + "\r\n"
-    "Content-Type: text/html; charset=utf-8\r\n"
+    response = b"HTTP/1.1 {} {}\r\nContent_Type: text/html;\
+    charset=utf-8\r\n".format(error_code, reason_phrase)
     return response
 
 
@@ -37,35 +37,32 @@ def return_request():
                 if len(msg) < 1024:
                     break
             try:
-                uri = parse_request(request)
-                conn.sendall(response_ok(uri))
+                response = response_ok(parse_request(request))
             except ValueError as detail:
-                detail = str(detail)
-                conn.sendall(response_error("400", detail))
+                response = response_error("400", str(detail))
             except LookupError as detail:
-                detail = str(detail)
-                conn.sendall(response_error("404", detail))
+                response = response_error("404", str(detail))
             except AttributeError as detail:
-                detail = str(detail)
-                conn.sendall(response_error("405", detail))
+                response = response_error("405", str(detail))
             except NotImplementedError as detail:
-                detail = str(detail)
-                conn.sendall(response_error("500", detail))
+                response = response_error("500", str(detail))
+            conn.sendall(response)
             conn.close()
         except KeyboardInterrupt:
             break
 
 
 def parse_request(request):
-    if "GET" not in request:
+    request = request.split("\r\n")
+    if "GET " not in request[0][:4]:
         raise AttributeError("Error.  Must send GET request")
-    if "HTTP/1.1" not in request:
+    if "HTTP/1.1" not in request[0][-8:]:
         raise NotImplementedError("Error. Only accepts HTTP 1.1 Protocol")
-    if "Host:" not in request:
+    host = [o for o in request if o[:6] == "Host:"]
+    if host == []:
         raise ValueError("Error. Must provide host")
     else:
-        request_lines = request.split(b"\r\n")
-        first_line = request_lines[0].split(" ")
+        first_line = request[0].split(" ")
         return first_line[1]
 
 
@@ -86,8 +83,8 @@ def resolve_uri(uri):
             content_type = b"text/html"
             body = "<!DOCTYPE html>\n<html> "
             for item in os.listdir(uri):
-                body += "\t\t<li>" + item + "</li>"
-            body = "\t<ul>" + body + "\t</ul>\n</html>"
+                body += "\t\t<li> {} </li>".format(item)
+            body = "\t<ul> {} \t</ul>\n</html>".format(body)
     except:
         raise LookupError("Resource not found.")
 

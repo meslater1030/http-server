@@ -2,7 +2,7 @@ import socket as s
 import os
 
 
-ROOT_DIRECTORY = b'/'
+ROOT_DIRECTORY = b'webroot/'
 
 
 def response_ok(uri):
@@ -59,6 +59,7 @@ def parse_request(request):
 
 
 def resolve_uri(uri):
+    uri = ROOT_DIRECTORY + uri
     if b"." in uri:
         if b".html" in uri:
             content_type = b"text/html"
@@ -70,10 +71,16 @@ def resolve_uri(uri):
             content_type = b"text/plain"
         body = open(uri).read()
     else:
-        content_type = b"text/plain"
-        body = os.listdir(uri).join(b"/n")
+        try:
+            content_type = b"text/html"
+            body = "<!DOCTYPE html>\n<html> "
+            for item in os.listdir(uri):
+                body += "\t\t<li>" + item + "</li>"
+            body = "\t<ul>" + body + "\t</ul>\n</html>"
+        except:
+            raise ValueError("resource not found")
 
-    return(body, content_type)
+    return (body, content_type)
 
 
 if __name__ == "__main__":

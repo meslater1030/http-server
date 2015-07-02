@@ -1,8 +1,9 @@
 import socket as s
 import os
+import mimetypes
 
 
-ROOT_DIRECTORY = b'webroot/'
+ROOT_DIRECTORY = os.path.join(__file__, b'webroot/')
 
 
 def response_ok(uri):
@@ -39,13 +40,15 @@ def return_request():
             try:
                 response = response_ok(parse_request(request))
             except ValueError as detail:
-                response = response_error("400", str(detail))
+                response = response_error(b"400", str(detail))
             except LookupError as detail:
-                response = response_error("404", str(detail))
+                response = response_error(b"404", str(detail))
             except AttributeError as detail:
-                response = response_error("405", str(detail))
+                response = response_error(b"405", str(detail))
             except NotImplementedError as detail:
-                response = response_error("500", str(detail))
+                response = response_error(b"500", str(detail))
+            except UserWarning as detail:
+                response = response_error(b"403", str(detail))
             conn.sendall(response)
             conn.close()
         except KeyboardInterrupt:
@@ -67,26 +70,21 @@ def parse_request(request):
 
 
 def resolve_uri(uri):
-    uri = ROOT_DIRECTORY + uri
-    try:
-        if b"." in uri:
-            body = open(uri).read()
-            if b".html" in uri:
-                content_type = b"text/html"
-            elif b".jpg" in uri:
-                content_type = b"image/jpg"
-            elif b".png" in uri:
-                content_type = b"image/png"
-            else:
-                content_type = b"text/plain"
-        else:
-            content_type = b"text/html"
-            body = "<!DOCTYPE html>\n<html> "
-            for item in os.listdir(uri):
-                body += "\t\t<li> {} </li>".format(item)
-            body = "\t<ul> {} \t</ul>\n</html>".format(body)
-    except:
-        raise LookupError("Resource not found.")
+    uri = os.path.join(ROOT_DIRECTORY + uri.strip(b"/"))
+    if b".." in uri:
+        raise UserWarning(b"Permission denied")
+    if os.path.isfile(uri):
+        with open(uri) as resource:
+            body = resource.read()
+            content_type = mimetypes.guess_type(resource)[0]
+    elif os.path.isdir(uri):
+        content_type = b"text/html"
+        body = b"<!DOCTYPE html>\n<html> "
+        for item in os.listdir(uri):
+            body += b"\t\t<li> {} </li>".format(item)
+        body = b"\t<ul> {} \t</ul>\n</html>".format(body)
+    else:
+        raise LookupError(b"Resource not found.")
 
     return (body, content_type)
 

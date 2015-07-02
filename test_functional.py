@@ -74,8 +74,16 @@ def test_parse_request():
     assert b"/index.html" in response
 
 
-def test_root():
+def test_uri_response():
     request = b"GET sample.txt HTTP/1.1\r\nHost:"
     uri = parse_request(request)
     response = resolve_uri(uri)
     assert b"This is a very simple text file" in response[0]
+    assert b"text" in response[1]
+
+
+def test_uri_dir():
+    request = b"GET images HTTP/1.1\r\nHost:"
+    uri = parse_request(request)
+    response = resolve_uri(uri)
+    assert b"JPEG" in response[0]

@@ -6,9 +6,11 @@ ROOT_DIRECTORY = b'webroot/'
 
 
 def response_ok(uri):
-    return b"HTTP/1.1 200" + uri + b"\r\n"
-    b"Content-Type: " + resolve_uri(uri)[1] + b"; charset=utf-8\r\n"
-    b"\r\n" + resolve_uri(uri)[0]
+    length = str(len(resolve_uri(uri)[0]))
+    response = b"HTTP/1.1 200 %s\r\nContent-Type: %s; charset=utf-8\
+    \r\nContent-Length: %s\r\n\r\n %s" % (uri, resolve_uri(uri)[1],
+                                          length, resolve_uri(uri)[0])
+    return response
 
 
 def response_error(error_code, reason_phrase):
@@ -40,6 +42,15 @@ def return_request():
             except ValueError as detail:
                 detail = str(detail)
                 conn.sendall(response_error("400", detail))
+            except LookupError as detail:
+                detail = str(detail)
+                conn.sendall(response_error("404", detail))
+            except AttributeError as detail:
+                detail = str(detail)
+                conn.sendall(response_error("405", detail))
+            except NotImplementedError as detail:
+                detail = str(detail)
+                conn.sendall(response_error("500", detail))
             conn.close()
         except KeyboardInterrupt:
             break
@@ -47,9 +58,9 @@ def return_request():
 
 def parse_request(request):
     if "GET" not in request:
-        raise ValueError("Error.  Must send GET request")
+        raise AttributeError("Error.  Must send GET request")
     if "HTTP/1.1" not in request:
-        raise ValueError("Error. Only accepts HTTP 1.1 Protocol")
+        raise NotImplementedError("Error. Only accepts HTTP 1.1 Protocol")
     if "Host:" not in request:
         raise ValueError("Error. Must provide host")
     else:
@@ -60,25 +71,25 @@ def parse_request(request):
 
 def resolve_uri(uri):
     uri = ROOT_DIRECTORY + uri
-    if b"." in uri:
-        if b".html" in uri:
-            content_type = b"text/html"
-        elif b".jpg" in uri:
-            content_type = b"image/jpg"
-        elif b".png" in uri:
-            content_type = b"image/png"
+    try:
+        if b"." in uri:
+            body = open(uri).read()
+            if b".html" in uri:
+                content_type = b"text/html"
+            elif b".jpg" in uri:
+                content_type = b"image/jpg"
+            elif b".png" in uri:
+                content_type = b"image/png"
+            else:
+                content_type = b"text/plain"
         else:
-            content_type = b"text/plain"
-        body = open(uri).read()
-    else:
-        try:
             content_type = b"text/html"
             body = "<!DOCTYPE html>\n<html> "
             for item in os.listdir(uri):
                 body += "\t\t<li>" + item + "</li>"
             body = "\t<ul>" + body + "\t</ul>\n</html>"
-        except:
-            raise ValueError("resource not found")
+    except:
+        raise LookupError("Resource not found.")
 
     return (body, content_type)
 

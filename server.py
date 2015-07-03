@@ -3,20 +3,20 @@ import os
 import mimetypes
 
 
-ROOT_DIRECTORY = os.path.join(__file__, b'webroot/')
+ROOT_DIRECTORY = os.path.join(os.path.dirname(__file__), b'webroot/')
 
 
 def response_ok(uri):
     length = str(len(resolve_uri(uri)[0]))
-    response = b"HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\
-    \r\nContent-Length: {}\r\n\r\n {}".format(resolve_uri(uri)[1],
-                                              length, resolve_uri(uri)[0])
+    response = (b"HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8"
+                "\r\nContent-Length: {}\r\n\r\n"
+                "{}".format(resolve_uri(uri)[1], length, resolve_uri(uri)[0]))
     return response
 
 
 def response_error(error_code, reason_phrase):
-    response = b"HTTP/1.1 {} {}\r\nContent_Type: text/html;\
-    charset=utf-8\r\n".format(error_code, reason_phrase)
+    response = (b"HTTP/1.1 {} {}\r\nContent_Type: text/html;"
+                "charset=utf-8\r\n".format(error_code, reason_phrase))
     return response
 
 
@@ -34,7 +34,7 @@ def return_request():
             request = ""
             while True:
                 msg = conn.recv(1024)
-                request = request + msg
+                request += msg
                 if len(msg) < 1024:
                     break
             try:
@@ -70,7 +70,7 @@ def parse_request(request):
 
 
 def resolve_uri(uri):
-    uri = os.path.join(ROOT_DIRECTORY + uri.strip(b"/"))
+    uri = os.path.join(ROOT_DIRECTORY + uri.lstrip(b"/"))
     if b".." in uri:
         raise UserWarning(b"Permission denied")
     if os.path.isfile(uri):

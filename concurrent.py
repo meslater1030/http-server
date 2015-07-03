@@ -21,7 +21,7 @@ def return_concurrent_request():
             request = ""
             while True:
                 msg = conn.recv(1024)
-                request = request + msg
+                request += msg
                 if len(msg) < 1024:
                     break
             try:
@@ -33,7 +33,7 @@ def return_concurrent_request():
             except AttributeError as detail:
                 response = server.response_error(b"405", str(detail))
             except NotImplementedError as detail:
-                response = server.response_error(b"500", str(detail))
+                response = server.response_error(b"400", str(detail))
             except UserWarning as detail:
                 response = server.response_error(b"403", str(detail))
             conn.sendall(response)

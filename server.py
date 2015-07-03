@@ -76,7 +76,7 @@ def resolve_uri(uri):
     if os.path.isfile(uri):
         with open(uri) as resource:
             body = resource.read()
-            content_type = mimetypes.guess_type(resource)[0]
+        content_type = mimetypes.guess_type(uri)[0]
     elif os.path.isdir(uri):
         content_type = b"text/html"
         body = b"<!DOCTYPE html>\n<html> "

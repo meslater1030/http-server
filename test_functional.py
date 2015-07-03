@@ -21,7 +21,9 @@ def client_code():
 
 def test_response_ok():
     response = response_ok('a_web_page.html')
-    assert "200" in response
+    assert "HTTP/1.1 200 OK" in response
+    assert ("<p>A fine place to spend a week learning web "
+            "programming!</p>" in response)
 
 
 def test_bad_HTTP():
